@@ -48,22 +48,30 @@ export default function LoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Starter Stack</CardTitle>
-            <CardDescription>Supabase não configurado</CardDescription>
+            <CardDescription>Configure o Supabase para acessar o sistema</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              Configure as variáveis de ambiente do Supabase para habilitar a autenticação.
+              Para ver o sistema, configure as variáveis de ambiente do Supabase no arquivo{' '}
+              <code className="bg-muted px-1 py-0.5 rounded">.env.local</code>
             </p>
             <pre className="bg-muted p-4 rounded-lg text-xs overflow-auto">
-              {`NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=`}
+              {`NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key`}
             </pre>
+            <p className="text-xs text-muted-foreground text-center">
+              Acesse{' '}
+              <a
+                href="https://supabase.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                supabase.com
+              </a>{' '}
+              → Settings → API para obter as credenciais
+            </p>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full" variant="outline" asChild>
-              <a href="/">Voltar ao Dashboard</a>
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     )

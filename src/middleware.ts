@@ -9,8 +9,16 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  // Se Supabase não está configurado, permite acesso
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login')
+  const isCallbackPage = request.nextUrl.pathname.startsWith('/callback')
+
+  // Se Supabase não está configurado, redireciona para login
   if (!supabaseUrl || !supabaseKey) {
+    if (!isAuthPage) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
     return supabaseResponse
   }
 
@@ -35,12 +43,8 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login')
-  const isPublicPage = request.nextUrl.pathname === '/'
-  const isCallbackPage = request.nextUrl.pathname.startsWith('/callback')
-
   // Se não está logado e tenta acessar página protegida
-  if (!user && !isAuthPage && !isPublicPage && !isCallbackPage) {
+  if (!user && !isAuthPage && !isCallbackPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
