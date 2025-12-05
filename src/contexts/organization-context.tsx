@@ -23,11 +23,11 @@ const OrganizationContext = createContext<OrganizationContextType | undefined>(u
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
+  const { user, isConfigured } = useAuth()
   const supabase = createClient()
 
   const fetchOrganization = async () => {
-    if (!user) {
+    if (!user || !supabase) {
       setOrganization(null)
       setLoading(false)
       return
@@ -52,8 +52,12 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
   }
 
   useEffect(() => {
+    if (!isConfigured) {
+      setLoading(false)
+      return
+    }
     fetchOrganization()
-  }, [user])
+  }, [user, isConfigured])
 
   const refresh = async () => {
     await fetchOrganization()

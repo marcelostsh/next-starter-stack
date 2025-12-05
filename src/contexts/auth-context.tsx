@@ -2,11 +2,12 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase'
+import { createClient, isSupabaseConfigured } from '@/lib/supabase'
 
 type AuthContextType = {
   user: User | null
   loading: boolean
+  isConfigured: boolean
   signInWithGoogle: () => Promise<void>
   signInWithEmail: (email: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
@@ -17,9 +18,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const isConfigured = isSupabaseConfigured()
   const supabase = createClient()
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     // Get initial session
     const getSession = async () => {
       const {
@@ -40,9 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [supabase])
 
   const signInWithGoogle = async () => {
+    if (!supabase) return
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -52,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithEmail = async (email: string) => {
+    if (!supabase) return { error: 'Supabase não configurado' }
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -67,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
   }
 
@@ -75,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         loading,
+        isConfigured,
         signInWithGoogle,
         signInWithEmail,
         signOut,
