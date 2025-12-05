@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/login')
-  const isCallbackPage = request.nextUrl.pathname.startsWith('/callback')
+  const isCallbackPage = request.nextUrl.pathname.startsWith('/auth/callback')
 
   // Se Supabase não está configurado, redireciona para login
   if (!supabaseUrl || !supabaseKey) {

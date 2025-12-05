@@ -39,11 +39,31 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       .from('organizations')
       .select('*')
       .eq('owner_id', user.id)
-      .single()
+      .limit(1)
+      .maybeSingle()
 
     if (error) {
       console.error('Error fetching organization:', error)
       setOrganization(null)
+      setLoading(false)
+      return
+    }
+
+    if (!data) {
+      // Nenhuma organização encontrada - criar uma padrão
+      const userName = user.email?.split('@')[0] || 'Minha'
+      const { data: newOrg, error: createError } = await supabase
+        .from('organizations')
+        .insert({ name: `${userName}'s Organization`, owner_id: user.id })
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Error creating organization:', createError)
+        setOrganization(null)
+      } else {
+        setOrganization(newOrg)
+      }
     } else {
       setOrganization(data)
     }
