@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { ThemeToggle } from './theme-toggle'
 import { LogOut, User } from 'lucide-react'
 
 export function Header() {
@@ -28,6 +29,8 @@ export function Header() {
       <div className="flex-1">
         {organization && <span className="text-sm text-muted-foreground">{organization.name}</span>}
       </div>
+
+      <ThemeToggle />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
